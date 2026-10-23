@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from .services import get_quote, get_weather
+from .services import get_definition, get_quote, get_weather
 
 from .forms import RegisterForm, TaskForm
 from .models import Task
@@ -63,6 +63,9 @@ def dashboard(request):
         request.session["city"] = city
     city = request.session.get("city", "Iligan")
 
+    # Word lookup is not saved anywhere; it only lives in this request
+    word = request.GET.get("word", "").strip()
+
     tasks = Task.objects.filter(user=request.user)
     today = timezone.localdate()
     context = {
@@ -74,6 +77,8 @@ def dashboard(request):
         "city": city,
         "weather": get_weather(city),
         "quote": get_quote(request.user),
+        "word": word,
+        "definition": get_definition(word) if word else None,
     }
     return render(request, "planner/dashboard.html", context)
 

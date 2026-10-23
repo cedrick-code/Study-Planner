@@ -302,3 +302,13 @@ tr:last-child td { border-bottom: 0; }
 .quote-text { margin: 0; font-size: 15px; font-weight: 500; line-height: 1.6; }
 .quote-author { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--blue); }
 .quote-note { margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+
+/* ---------- Dictionary widget ---------- */
+.dict-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.dict-word { font-size: 22px; font-weight: 800; color: var(--blue); }
+.dict-phonetic { font-size: 14px; color: var(--muted); }
+.dict-audio { width: 100%; height: 34px; margin-top: 8px; }
+.dict-pos { margin: 14px 0 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--blue); }
+.dict-list { margin: 0; padding-left: 20px; font-size: 14px; }
+.dict-list li { margin-bottom: 8px; }
+.dict-example { display: block; margin-top: 2px; font-size: 13px; color: var(--muted); }

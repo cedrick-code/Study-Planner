@@ -100,6 +100,42 @@
         <p class="quote-note">Source: {{ quote.source }}</p>
       {% endif %}
     </div>
+    <div class="card" id="dictionary" style="margin-top: 16px;">
+      <h2>Word lookup</h2>
+
+      <form method="get" action="#dictionary" class="inline-form">
+        <input type="text" name="word" value="{{ word }}" placeholder="e.g. mitosis">
+        <button class="btn btn-sm" type="submit">Look up</button>
+      </form>
+
+      {% if definition %}
+        {% if definition.error %}
+          <p class="api-error">{{ definition.error }}</p>
+        {% else %}
+          <div class="dict-head">
+            <span class="dict-word">{{ definition.word }}</span>
+            {% if definition.phonetic %}<span class="dict-phonetic">{{ definition.phonetic }}</span>{% endif %}
+          </div>
+          {% if definition.audio %}
+            <audio controls src="{{ definition.audio }}" class="dict-audio"></audio>
+          {% endif %}
+
+          {% for meaning in definition.meanings %}
+            <p class="dict-pos">{{ meaning.part_of_speech }}</p>
+            <ol class="dict-list">
+              {% for d in meaning.definitions %}
+                <li>
+                  {{ d.text }}
+                  {% if d.example %}<em class="dict-example">“{{ d.example }}”</em>{% endif %}
+                </li>
+              {% endfor %}
+            </ol>
+          {% endfor %}
+        {% endif %}
+      {% else %}
+        <p class="quote-note" style="margin: 0;">Type a word to see its meaning.</p>
+      {% endif %}
+    </div>
   </aside>
 </div>
 {% endblock %}

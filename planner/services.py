@@ -2,6 +2,7 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
+from urllib.parse import quote as url_quote
 
 GEOCODE_URL = "https://geocoding-api.open-meteo.com/v1/search"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
@@ -147,3 +148,54 @@ def get_quote(user):
     index = (timezone.localdate().toordinal() + user.id) % len(FALLBACK_QUOTES)
     text, author = FALLBACK_QUOTES[index]
     return {"text": text, "author": author, "source": "offline"}
+
+DICTIONARY_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/"
+
+
+def get_definition(word):
+    """Look up a word. Returns a dict, or {"error": "..."}. Never raises."""
+    word = word.strip()
+    if not word:
+        return {"error": "Type a word to look up."}
+    if " " in word:
+        return {"error": "Please look up one word at a time."}
+
+    try:
+        response = requests.get(
+            DICTIONARY_URL + url_quote(word), timeout=settings.API_TIMEOUT
+        )
+        if response.status_code == 404:
+            return {"error": f'No definition found for "{word}". Check the spelling.'}
+        response.raise_for_status()
+        entry = response.json()[0]
+
+        # Pronunciation text and audio can be in different places
+        phonetic = entry.get("phonetic", "")
+        audio = ""
+        for item in entry.get("phonetics", []):
+            phonetic = phonetic or item.get("text", "")
+            if item.get("audio") and not audio:
+                audio = item["audio"]
+        if audio.startswith("//"):
+            audio = "https:" + audio
+
+        # Keep it short: up to 3 parts of speech, 2 definitions each
+        meanings = []
+        for meaning in entry.get("meanings", [])[:3]:
+            definitions = [
+                {"text": d["definition"], "example": d.get("example", "")}
+                for d in meaning.get("definitions", [])[:2]
+            ]
+            meanings.append(
+                {"part_of_speech": meaning.get("partOfSpeech", ""), "definitions": definitions}
+            )
+
+        return {
+            "word": entry.get("word", word),
+            "phonetic": phonetic,
+            "audio": audio,
+            "meanings": meanings,
+        }
+
+    except (requests.RequestException, KeyError, IndexError, ValueError):
+        return {"error": "The dictionary is unavailable right now. The rest of the planner still works."}
