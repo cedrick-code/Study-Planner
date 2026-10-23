@@ -87,7 +87,18 @@
     </div>
     <div class="card" style="margin-top: 16px;">
       <h2>Daily quote</h2>
-      <p style="color: var(--muted); font-size: 14px; margin: 0;">Coming soon.</p>
+      <blockquote class="quote">
+        <p class="quote-text">“{{ quote.text }}”</p>
+        <footer class="quote-author">— {{ quote.author }}</footer>
+      </blockquote>
+
+      {% if quote.source == "offline" %}
+        <p class="quote-note">Showing a saved quote because the quote services are unreachable.</p>
+      {% elif quote.source == "ZenQuotes" %}
+        <p class="quote-note">Quote from <a href="https://zenquotes.io/" target="_blank" rel="noopener">ZenQuotes.io</a></p>
+      {% else %}
+        <p class="quote-note">Source: {{ quote.source }}</p>
+      {% endif %}
     </div>
   </aside>
 </div>

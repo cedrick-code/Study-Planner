@@ -296,3 +296,9 @@ tr:last-child td { border-bottom: 0; }
 .weather-meta { margin: 0; font-size: 13px; color: var(--muted); }
 .weather-tip { margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--blue-soft); font-size: 13px; }
 .api-error { margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--red-soft); color: var(--red); font-size: 13px; }
+
+/* ---------- Quote widget ---------- */
+.quote { margin: 0; padding: 4px 0 4px 14px; border-left: 4px solid var(--blue); }
+.quote-text { margin: 0; font-size: 15px; font-weight: 500; line-height: 1.6; }
+.quote-author { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--blue); }
+.quote-note { margin: 12px 0 0; font-size: 12px; color: var(--muted); }

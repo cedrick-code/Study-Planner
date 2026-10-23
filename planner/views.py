@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from .services import get_weather
+from .services import get_quote, get_weather
 
 from .forms import RegisterForm, TaskForm
 from .models import Task
@@ -73,6 +73,7 @@ def dashboard(request):
         "pending": tasks.filter(is_complete=False).count(),
         "city": city,
         "weather": get_weather(city),
+        "quote": get_quote(request.user),
     }
     return render(request, "planner/dashboard.html", context)
 

@@ -1,5 +1,7 @@
 import requests
 from django.conf import settings
+from django.core.cache import cache
+from django.utils import timezone
 
 GEOCODE_URL = "https://geocoding-api.open-meteo.com/v1/search"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
@@ -74,3 +76,74 @@ def get_weather(city):
 
     except (requests.RequestException, KeyError, ValueError):
         return {"error": "Weather is unavailable right now. The rest of the planner still works."}
+
+QUOTE_TTL = 60 * 60 * 24  # 24 hours
+
+# Used when the Quotable API is unreachable
+FALLBACK_QUOTES = [
+    ("It always seems impossible until it's done.", "Nelson Mandela"),
+    ("The secret of getting ahead is getting started.", "Mark Twain"),
+    ("It does not matter how slowly you go as long as you do not stop.", "Confucius"),
+    ("Success is the sum of small efforts repeated day in and day out.", "Robert Collier"),
+    ("Don't watch the clock; do what it does. Keep going.", "Sam Levenson"),
+    ("The future depends on what you do today.", "Mahatma Gandhi"),
+    ("You don't have to be great to start, but you have to start to be great.", "Zig Ziglar"),
+    ("Well begun is half done.", "Aristotle"),
+    ("The expert in anything was once a beginner.", "Helen Hayes"),
+    ("Small deeds done are better than great deeds planned.", "Peter Marshall"),
+    ("Quality is not an act, it is a habit.", "Aristotle"),
+    ("What we learn with pleasure we never forget.", "Alfred Mercier"),
+]
+
+def _from_quotable():
+    response = requests.get("https://api.quotable.io/random", timeout=3)
+    response.raise_for_status()
+    data = response.json()
+    item = data[0] if isinstance(data, list) else data
+    return {"text": item["content"], "author": item["author"], "source": "Quotable"}
+
+
+def _from_dummyjson():
+    response = requests.get(
+        "https://dummyjson.com/quotes/random", timeout=settings.API_TIMEOUT
+    )
+    response.raise_for_status()
+    item = response.json()
+    return {"text": item["quote"], "author": item["author"], "source": "DummyJSON"}
+
+
+def _from_zenquotes():
+    response = requests.get(
+        "https://zenquotes.io/api/random", timeout=settings.API_TIMEOUT
+    )
+    response.raise_for_status()
+    item = response.json()[0]
+    # When rate-limited, ZenQuotes sends a warning message as if it were a quote
+    if item["a"] == "zenquotes.io":
+        raise ValueError("ZenQuotes rate limit reached")
+    return {"text": item["q"], "author": item["a"], "source": "ZenQuotes"}
+
+
+# Tried in this order. Reorder the list to change priority.
+QUOTE_PROVIDERS = [_from_quotable, _from_dummyjson, _from_zenquotes]
+
+
+def get_quote(user):
+    """Different quote per user, kept for 24 hours. Never raises."""
+    cache_key = f"quote_user_{user.id}"
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+
+    for provider in QUOTE_PROVIDERS:
+        try:
+            quote = provider()
+        except (requests.RequestException, KeyError, IndexError, ValueError):
+            continue  # this service failed, try the next one
+        cache.set(cache_key, quote, QUOTE_TTL)
+        return quote
+
+    # Every service failed: use the built-in list (not cached, so we retry next visit)
+    index = (timezone.localdate().toordinal() + user.id) % len(FALLBACK_QUOTES)
+    text, author = FALLBACK_QUOTES[index]
+    return {"text": text, "author": author, "source": "offline"}
