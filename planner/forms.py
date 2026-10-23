@@ -2,19 +2,22 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import StudyTask
+from .models import Task
 
 
-class SignUpForm(UserCreationForm):
+class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ["username", "email", "password1", "password2"]
 
 
-class StudyTaskForm(forms.ModelForm):
+class TaskForm(forms.ModelForm):
     class Meta:
-        model = StudyTask
-        fields = ('title', 'description', 'due_date', 'completed')
-        widgets = {'due_date': forms.DateInput(attrs={'type': 'date'})}
+        model = Task
+        fields = ["title", "description", "due_date", "is_complete"]
+        widgets = {
+            "due_date": forms.DateInput(attrs={"type": "date"}),
+            "description": forms.Textarea(attrs={"rows": 3}),
+        }

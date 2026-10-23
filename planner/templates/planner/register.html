@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Register | Study Planner{% endblock %}
+
+{% block content %}
+<style>
+  /* PASTE the whole <style> contents from login.html here (from :root down) */
+</style>
+
+<section class="login-card">
+  <h1>Create account</h1>
+  <p class="intro">Start organizing your study tasks.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="button" type="submit">Register</button>
+  </form>
+
+  <p class="auth-footer">
+    Already have an account? <a href="{% url 'login' %}">Log in</a>
+  </p>
+</section>
+{% endblock %}

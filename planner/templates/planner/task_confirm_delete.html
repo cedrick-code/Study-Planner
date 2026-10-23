@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Delete task | Study Planner{% endblock %}
+
+{% block content %}
+<div style="max-width: 440px; margin: 0 auto; background: #fff; padding: 28px; border-radius: 14px; border: 1px solid rgb(36 88 198 / 18%);">
+  <h1>Delete task?</h1>
+  <p>You are about to delete <strong>{{ task.title }}</strong>. This cannot be undone.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" style="padding: 10px 18px; border: 0; border-radius: 8px; background: #c62424; color: #fff; font-weight: 700; cursor: pointer;">Yes, delete</button>
+    <a href="{% url 'dashboard' %}" style="margin-left: 12px;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

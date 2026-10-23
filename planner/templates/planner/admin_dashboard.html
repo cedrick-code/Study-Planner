@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Admin summary | Study Planner{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <h1>Admin summary</h1>
+  <p>Users: <strong>{{ total_users }}</strong> · Tasks: <strong>{{ total_tasks }}</strong> · Completed: <strong>{{ completed_tasks }}</strong></p>
+
+  <h2>Recently added tasks</h2>
+  <ul>
+    {% for task in recent_tasks %}
+      <li>{{ task.title }} (by {{ task.user.username }}, due {{ task.due_date }})</li>
+    {% empty %}
+      <li>No tasks yet.</li>
+    {% endfor %}
+  </ul>
+  <p><a href="{% url 'dashboard' %}">Back to my dashboard</a></p>
+</div>
+{% endblock %}

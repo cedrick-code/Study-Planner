@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | Study Planner{% endblock %}
+
+{% block content %}
+<style>
+  .wrap { max-width: 800px; margin: 0 auto; }
+  .head { display: flex; justify-content: space-between; align-items: center; }
+  .btn { display: inline-block; padding: 8px 14px; border-radius: 8px; background: #2458c6; color: #fff; text-decoration: none; font-weight: 700; font-size: 13px; border: 0; cursor: pointer; }
+  .task { background: #fff; border: 1px solid rgb(36 88 198 / 18%); border-radius: 12px; padding: 16px; margin-top: 12px; }
+  .task h3 { margin: 0 0 4px; }
+  .task.done h3 { text-decoration: line-through; opacity: .6; }
+  .muted { color: rgb(36 88 198 / 65%); font-size: 13px; }
+  .actions a { margin-right: 12px; font-size: 13px; font-weight: 700; color: #2458c6; }
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <h1>Hi, {{ user.username }}</h1>
+    <a class="btn" href="{% url 'task_create' %}">+ Add task</a>
+  </div>
+
+  {% if user.is_staff or user.profile.role == "admin" %}
+    <p><a href="{% url 'admin_dashboard' %}">Open admin summary</a></p>
+  {% endif %}
+
+  {% for task in tasks %}
+    <div class="task {% if task.is_complete %}done{% endif %}">
+      <h3>{{ task.title }}</h3>
+      <p class="muted">Due {{ task.due_date|date:"F j, Y" }} · {% if task.is_complete %}Complete{% else %}Pending{% endif %}</p>
+      {% if task.description %}<p>{{ task.description }}</p>{% endif %}
+      <div class="actions">
+        <a href="{% url 'task_update' task.pk %}">Edit</a>
+        <a href="{% url 'task_delete' task.pk %}">Delete</a>
+      </div>
+    </div>
+  {% empty %}
+    <p class="muted">No tasks yet. Click "Add task" to create your first one.</p>
+  {% endfor %}
+</div>
+{% endblock %}
