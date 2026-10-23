@@ -18,6 +18,14 @@
 
 <div class="layout">
   <section>
+    <div class="card" style="margin-bottom: 16px;">
+      <h2>Due today</h2>
+      {% for task in today_tasks %}
+        <p style="margin: 0 0 6px;">• {{ task.title }}</p>
+      {% empty %}
+        <p style="margin: 0; color: var(--muted); font-size: 14px;">Nothing due today.</p>
+      {% endfor %}
+    </div>
     <div class="task-list">
       {% for task in tasks %}
         <article class="task {% if task.is_complete %}done{% elif task.is_overdue %}overdue{% endif %}">
