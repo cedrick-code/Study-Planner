@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 class Profile(models.Model):
@@ -40,6 +41,8 @@ class Task(models.Model):
 
     class Meta:
         ordering = ["is_complete", "due_date"]
-
+    @property
+    def is_overdue(self):
+        return not self.is_complete and self.due_date < timezone.localdate()
     def __str__(self):
         return self.title

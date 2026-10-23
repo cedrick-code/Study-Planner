@@ -2,18 +2,46 @@
 {% block title %}Admin summary | Study Planner{% endblock %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 0 auto;">
-  <h1>Admin summary</h1>
-  <p>Users: <strong>{{ total_users }}</strong> · Tasks: <strong>{{ total_tasks }}</strong> · Completed: <strong>{{ completed_tasks }}</strong></p>
+<div class="page-head">
+  <div>
+    <h1>Admin summary</h1>
+    <p>An overview of everything in the system.</p>
+  </div>
+  <a class="btn btn-outline" href="{% url 'dashboard' %}">Back to my dashboard</a>
+</div>
 
+<div class="stats">
+  <div class="stat"><span>Users</span><strong>{{ total_users }}</strong></div>
+  <div class="stat"><span>Tasks</span><strong>{{ total_tasks }}</strong></div>
+  <div class="stat"><span>Completed</span><strong>{{ completed_tasks }}</strong></div>
+</div>
+
+<div class="card">
   <h2>Recently added tasks</h2>
-  <ul>
-    {% for task in recent_tasks %}
-      <li>{{ task.title }} (by {{ task.user.username }}, due {{ task.due_date }})</li>
-    {% empty %}
-      <li>No tasks yet.</li>
-    {% endfor %}
-  </ul>
-  <p><a href="{% url 'dashboard' %}">Back to my dashboard</a></p>
+  <table>
+    <thead>
+      <tr><th>Task</th><th>Student</th><th>Due</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for task in recent_tasks %}
+        <tr>
+          <td>{{ task.title }}</td>
+          <td>{{ task.user.username }}</td>
+          <td>{{ task.due_date|date:"M j, Y" }}</td>
+          <td>
+            {% if task.is_complete %}
+              <span class="badge badge-done">Completed</span>
+            {% elif task.is_overdue %}
+              <span class="badge badge-overdue">Overdue</span>
+            {% else %}
+              <span class="badge badge-pending">Pending</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" style="color: var(--muted);">No tasks yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}

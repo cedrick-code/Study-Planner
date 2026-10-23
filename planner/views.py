@@ -29,7 +29,13 @@ def register(request):
 @login_required
 def dashboard(request):
     tasks = Task.objects.filter(user=request.user)
-    return render(request, "planner/dashboard.html", {"tasks": tasks})
+    context = {
+        "tasks": tasks,
+        "total": tasks.count(),
+        "done": tasks.filter(is_complete=True).count(),
+        "pending": tasks.filter(is_complete=False).count(),
+    }
+    return render(request, "planner/dashboard.html", context)
 
 
 @login_required

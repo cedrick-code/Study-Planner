@@ -5,69 +5,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Study Planner{% endblock %}</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #f5f8ff;
-      color: #2458c6;
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 24px;
-      background: #fff;
-      border-bottom: 1px solid rgb(36 88 198 / 18%);
-    }
-
-    .topbar a { color: #2458c6; text-decoration: none; font-weight: 700; }
-    .topbar form { display: inline; margin: 0; }
-    .topbar button {
-      border: 1px solid #2458c6;
-      background: #fff;
-      color: #2458c6;
-      border-radius: 7px;
-      padding: 6px 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    main { padding: 40px 16px; }
-
-    .messages { list-style: none; max-width: 440px; margin: 0 auto 16px; padding: 0; }
-    .messages li {
-      padding: 10px 14px;
-      border-radius: 8px;
-      background: rgb(36 88 198 / 8%);
-      font-size: 13px;
-    }
-  </style>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
   <header class="topbar">
-    <a href="/">Study Planner</a>
-    {% if user.is_authenticated %}
-      <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Log out</button>
-      </form>
-    {% endif %}
+    <a class="brand" href="{% url 'dashboard' %}">
+      <span class="brand-icon">✎</span> Study Planner
+    </a>
+
+    <nav class="nav-right">
+      {% if user.is_authenticated %}
+        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+        {% if user.is_staff or user.profile.role == "admin" %}
+          <a class="nav-link" href="{% url 'admin_dashboard' %}">Admin summary</a>
+        {% endif %}
+        <span class="nav-user">{{ user.username }}</span>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button class="btn btn-outline btn-sm" type="submit">Log out</button>
+        </form>
+      {% else %}
+        <a class="nav-link" href="{% url 'login' %}">Log in</a>
+        <a class="btn btn-sm" href="{% url 'register' %}">Sign up</a>
+      {% endif %}
+    </nav>
   </header>
 
-  <main>
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 
+  <main class="container">
     {% block content %}{% endblock %}
   </main>
 </body>
