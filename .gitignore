@@ -1,0 +1,16 @@
+# Secrets
+.env
+
+# Database
+db.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+django-env/
+venv/
+
+# Deployment files
+staticfiles/

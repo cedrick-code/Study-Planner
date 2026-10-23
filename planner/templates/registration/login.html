@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Log in | Study Planner{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --blue: #2458c6;
+    --white: #fff;
+    --blue-tint: rgb(36 88 198 / 8%);
+    --blue-border: rgb(36 88 198 / 18%);
+    --blue-muted: rgb(36 88 198 / 65%);
+    --shadow: 0 12px 32px rgb(36 88 198 / 8%);
+  }
+
+  .login-card {
+    width: min(100%, 440px);
+    margin: 0 auto;
+    padding: 30px;
+    border: 1px solid var(--blue-border);
+    border-radius: 14px;
+    background: var(--white);
+    box-shadow: var(--shadow);
+  }
+
+  .login-card h1 {
+    margin: 0 0 7px;
+    color: var(--blue);
+    font-size: clamp(25px, 4vw, 30px);
+    letter-spacing: -.045em;
+  }
+
+  .intro {
+    margin: 0 0 23px;
+    color: var(--blue-muted);
+    font-size: 13px;
+  }
+
+  .login-card form p {
+    margin: 0 0 17px;
+  }
+
+  .login-card label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .login-card input:not([type="checkbox"]) {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 1px solid var(--blue-border);
+    border-radius: 7px;
+    outline: none;
+    background: var(--white);
+    color: var(--blue);
+    font: inherit;
+  }
+
+  .login-card input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-tint);
+  }
+
+  .errorlist {
+    margin: 5px 0;
+    padding: 8px 12px 8px 28px;
+    border-radius: 7px;
+    background: rgb(198 36 36 / 8%);
+    color: #c62424;
+    font-size: 12px;
+  }
+
+  .button {
+    display: inline-flex;
+    width: 100%;
+    min-height: 43px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3px;
+    border: 1px solid var(--blue);
+    border-radius: 8px;
+    background: var(--blue);
+    color: var(--white);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .button:hover {
+    background: var(--blue-muted);
+  }
+
+  .auth-footer {
+    margin: 20px 0 0;
+    color: var(--blue-muted);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .auth-footer a {
+    color: var(--blue);
+    font-weight: 700;
+  }
+
+  @media (max-width: 480px) {
+    .login-card {
+      padding: 24px 20px;
+    }
+  }
+</style>
+
+<section class="login-card">
+  <h1>Welcome back</h1>
+  <p class="intro">Log in to pick up where you left off.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="button" type="submit">Log in</button>
+  </form>
+
+  <p class="auth-footer">
+    New here? <a href="{% url 'register' %}">Create an account</a>
+  </p>
+</section>
+{% endblock %}

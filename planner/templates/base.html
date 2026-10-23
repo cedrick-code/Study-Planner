@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Study Planner{% endblock %}</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f5f8ff;
+      color: #2458c6;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: #fff;
+      border-bottom: 1px solid rgb(36 88 198 / 18%);
+    }
+
+    .topbar a { color: #2458c6; text-decoration: none; font-weight: 700; }
+    .topbar form { display: inline; margin: 0; }
+    .topbar button {
+      border: 1px solid #2458c6;
+      background: #fff;
+      color: #2458c6;
+      border-radius: 7px;
+      padding: 6px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    main { padding: 40px 16px; }
+
+    .messages { list-style: none; max-width: 440px; margin: 0 auto 16px; padding: 0; }
+    .messages li {
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgb(36 88 198 / 8%);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="/">Study Planner</a>
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Log out</button>
+      </form>
+    {% endif %}
+  </header>
+
+  <main>
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
