@@ -312,3 +312,26 @@ tr:last-child td { border-bottom: 0; }
 .dict-list { margin: 0; padding-left: 20px; font-size: 14px; }
 .dict-list li { margin-bottom: 8px; }
 .dict-example { display: block; margin-top: 2px; font-size: 13px; color: var(--muted); }
+
+/* ---------- Holidays ---------- */
+.badge-holiday { background: var(--blue-soft); color: var(--blue); }
+.badge-local { background: var(--amber-soft); color: var(--amber); margin-left: 4px; }
+.alert-warning { background: var(--amber-soft); color: var(--amber); border: 1px solid #f3dfae; }
+.holiday-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.holiday-date { flex: 0 0 52px; font-weight: 700; color: var(--blue); }
+
+/* ---------- Admin tables ---------- */
+.table-wrap { overflow-x: auto; }
+.actions-cell { white-space: nowrap; text-align: right; }
+.actions-cell form { display: inline; margin: 0 0 0 6px; }
+.actions-cell a { margin-right: 6px; font-size: 13px; font-weight: 600; text-decoration: none; }
+
+/* ---------- Hide the page scrollbar (scrolling still works) ---------- */
+html {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* older Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none;               /* Chrome, Edge, Safari */
+}

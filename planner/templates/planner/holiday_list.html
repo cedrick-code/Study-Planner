@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Iligan holidays | Study Planner{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Iligan holidays</h1>
+    <p>Local days off and school events. They show on every student's dashboard.</p>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <a class="btn btn-outline" href="{% url 'admin_dashboard' %}">Back to summary</a>
+    <a class="btn" href="{% url 'holiday_create' %}">+ Add holiday</a>
+  </div>
+</div>
+
+<div class="card">
+  <p class="quote-note" style="margin: 0 0 12px;">
+    Iligan's special non-working days are declared by proclamation, year by year.
+    Add each one when it is announced.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Holiday</th><th>Note</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for h in holidays %}
+          <tr>
+            <td>{{ h.date|date:"M j, Y" }}</td>
+            <td>{{ h.name }}</td>
+            <td>{{ h.note|default:"-" }}</td>
+            <td class="actions-cell">
+              <a href="{% url 'holiday_update' h.pk %}">Edit</a>
+              <form method="post" action="{% url 'holiday_delete' h.pk %}"
+                    onsubmit="return confirm('Delete this holiday?');">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" style="color: var(--muted);">No Iligan holidays yet. Click "+ Add holiday".</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

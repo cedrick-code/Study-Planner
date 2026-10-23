@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}{{ heading }} | Study Planner{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <h1>{{ heading }}</h1>
+  <p class="intro">This day will appear on every student's dashboard with an "Iligan" tag.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-actions">
+      <button class="btn" type="submit">Save holiday</button>
+      <a href="{% url 'holiday_list' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

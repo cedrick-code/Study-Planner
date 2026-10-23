@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Task
+from .models import LocalHoliday, Task
 
 
 class RegisterForm(UserCreationForm):
@@ -18,6 +18,15 @@ class TaskForm(forms.ModelForm):
         model = Task
         fields = ["title", "description", "due_date", "is_complete"]
         widgets = {
-            "due_date": forms.DateInput(attrs={"type": "date"}),
+            "due_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
             "description": forms.Textarea(attrs={"rows": 3}),
+        }
+
+
+class LocalHolidayForm(forms.ModelForm):
+    class Meta:
+        model = LocalHoliday
+        fields = ["name", "date", "note"]
+        widgets = {
+            "date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
         }

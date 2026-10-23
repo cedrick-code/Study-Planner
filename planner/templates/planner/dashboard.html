@@ -26,6 +26,7 @@
         <p style="margin: 0; color: var(--muted); font-size: 14px;">Nothing due today.</p>
       {% endfor %}
     </div>
+
     <div class="task-list">
       {% for task in tasks %}
         <article class="task {% if task.is_complete %}done{% elif task.is_overdue %}overdue{% endif %}">
@@ -41,9 +42,13 @@
                 <span class="badge badge-pending">Pending</span>
               {% endif %}
               <span>Due {{ task.due_date|date:"M j, Y" }}</span>
+              {% if task.holiday %}
+                <span class="badge badge-holiday">🎌 {{ task.holiday }}</span>
+              {% endif %}
             </div>
           </div>
           <div class="task-actions">
+            <a href="{% url 'task_topic' task.pk %}">📖 Study</a>
             <a href="{% url 'task_update' task.pk %}">Edit</a>
             <a class="del" href="{% url 'task_delete' task.pk %}">Delete</a>
           </div>
@@ -58,6 +63,7 @@
   </section>
 
   <aside>
+    <!-- Weather -->
     <div class="card">
       <h2>Weather</h2>
 
@@ -85,6 +91,8 @@
         {% endif %}
       {% endif %}
     </div>
+
+    <!-- Daily quote -->
     <div class="card" style="margin-top: 16px;">
       <h2>Daily quote</h2>
       <blockquote class="quote">
@@ -100,6 +108,8 @@
         <p class="quote-note">Source: {{ quote.source }}</p>
       {% endif %}
     </div>
+
+    <!-- Word lookup -->
     <div class="card" id="dictionary" style="margin-top: 16px;">
       <h2>Word lookup</h2>
 
@@ -135,6 +145,34 @@
       {% else %}
         <p class="quote-note" style="margin: 0;">Type a word to see its meaning.</p>
       {% endif %}
+    </div>
+
+    <!-- Upcoming holidays -->
+    <div class="card" style="margin-top: 16px;">
+      <h2>Upcoming holidays</h2>
+
+      {% if holiday_failed %}
+        <p class="api-error">National holidays are unavailable right now. Iligan days still show.</p>
+      {% endif %}
+
+      {% for h in upcoming %}
+        <div class="holiday-row">
+          <span class="holiday-date">{{ h.date|date:"M j" }}</span>
+          <span>{{ h.name }}{% if h.local %} <span class="badge badge-local">Iligan</span>{% endif %}</span>
+        </div>
+      {% empty %}
+        {% if not holiday_failed %}
+          <p class="quote-note" style="margin: 0;">No upcoming holidays found.</p>
+        {% endif %}
+      {% endfor %}
+
+      <p class="quote-note">
+        Philippine holidays
+        {% if holiday_sources %}from {{ holiday_sources|join:", " }}{% endif %}.
+        {% if "Calendarific" in holiday_sources %}
+          Data by <a href="https://calendarific.com/" target="_blank" rel="noopener">Calendarific</a>.
+        {% endif %}
+      </p>
     </div>
   </aside>
 </div>
