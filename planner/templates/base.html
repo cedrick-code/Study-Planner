@@ -15,15 +15,14 @@
 
     <nav class="nav-right">
       {% if user.is_authenticated %}
-        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
         {% if user.is_staff or user.profile.role == "admin" %}
           <a class="nav-link" href="{% url 'admin_dashboard' %}">Admin summary</a>
+          <a class="nav-link" href="{% url 'admin:index' %}">Manage records</a>
+        {% else %}
+          <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
         {% endif %}
         <span class="nav-user">{{ user.username }}</span>
-        <form method="post" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <button class="btn btn-outline btn-sm" type="submit">Log out</button>
-        </form>
+        <button class="btn btn-outline btn-sm" type="button" id="logout-open">Log out</button>
       {% else %}
         <a class="nav-link" href="{% url 'login' %}">Log in</a>
         <a class="btn btn-sm" href="{% url 'register' %}">Sign up</a>
@@ -34,7 +33,7 @@
   {% if messages %}
     <ul class="messages">
       {% for message in messages %}
-        <li>{{ message }}</li>
+        <li class="alert alert-{{ message.tags }}">{{ message }}</li>
       {% endfor %}
     </ul>
   {% endif %}
@@ -42,5 +41,35 @@
   <main class="container">
     {% block content %}{% endblock %}
   </main>
+
+  {% if user.is_authenticated %}
+  <div class="modal" id="logout-modal" hidden>
+    <div class="modal-box">
+      <h2>Log out?</h2>
+      <p>Are you sure you want to log out?</p>
+      <form method="post" action="{% url 'logout' %}" class="modal-actions">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit">Yes, log out</button>
+        <button class="btn btn-outline" type="button" id="logout-cancel">No, stay</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById("logout-modal");
+    document.getElementById("logout-open").addEventListener("click", () => {
+      modal.hidden = false;
+    });
+    document.getElementById("logout-cancel").addEventListener("click", () => {
+      modal.hidden = true;
+    });
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.hidden = true;
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") modal.hidden = true;
+    });
+  </script>
+  {% endif %}
 </body>
 </html>

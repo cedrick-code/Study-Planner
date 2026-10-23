@@ -1,11 +1,13 @@
 from functools import wraps
 
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from .services import get_weather
 
 from .forms import RegisterForm, TaskForm
 from .models import Task
@@ -36,13 +38,18 @@ def register(request):
         return redirect("dashboard")
     form = RegisterForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
-        user = form.save()
-        user.profile.role = form.cleaned_data["role"]
-        user.profile.save()
-        login(request, user)
-        messages.success(request, "Welcome! Your account is ready.")
-        return redirect("dashboard")
+        form.save()
+        messages.success(
+            request, "Registration successful! Please log in with your new account."
+        )
+        return redirect("login")
     return render(request, "registration/register.html", {"form": form})
+
+@require_POST
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have been logged out successfully.")
+    return redirect("login")
 
 
 # ---------- Student pages ----------
@@ -50,6 +57,12 @@ def register(request):
 @login_required
 @student_only
 def dashboard(request):
+    # Remember the city the student chose; default to Iligan
+    city = request.GET.get("city", "").strip()
+    if city:
+        request.session["city"] = city
+    city = request.session.get("city", "Iligan")
+
     tasks = Task.objects.filter(user=request.user)
     today = timezone.localdate()
     context = {
@@ -58,6 +71,8 @@ def dashboard(request):
         "total": tasks.count(),
         "done": tasks.filter(is_complete=True).count(),
         "pending": tasks.filter(is_complete=False).count(),
+        "city": city,
+        "weather": get_weather(city),
     }
     return render(request, "planner/dashboard.html", context)
 

@@ -60,7 +60,30 @@
   <aside>
     <div class="card">
       <h2>Weather</h2>
-      <p style="color: var(--muted); font-size: 14px; margin: 0;">Coming soon.</p>
+
+      <form method="get" class="inline-form">
+        <input type="text" name="city" value="{{ city }}" placeholder="Enter a city">
+        <button class="btn btn-sm" type="submit">Go</button>
+      </form>
+
+      {% if weather.error %}
+        <p class="api-error">{{ weather.error }}</p>
+      {% else %}
+        <div class="weather">
+          <div class="weather-icon">{{ weather.icon }}</div>
+          <div>
+            <div class="weather-temp">{{ weather.temperature }}°C</div>
+            <div class="weather-desc">{{ weather.description }}</div>
+          </div>
+        </div>
+        <p class="weather-place">{{ weather.place }}</p>
+        <p class="weather-meta">Humidity {{ weather.humidity }}% · Wind {{ weather.wind }} km/h</p>
+        {% if weather.is_rainy %}
+          <p class="weather-tip">🌧️ Rain expected. A good day to study indoors.</p>
+        {% else %}
+          <p class="weather-tip">👍 Looks fine outside. Studying on campus is an option.</p>
+        {% endif %}
+      {% endif %}
     </div>
     <div class="card" style="margin-top: 16px;">
       <h2>Daily quote</h2>
